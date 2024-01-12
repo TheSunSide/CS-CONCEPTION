@@ -130,3 +130,8 @@ void Tree::listBranches()
         }
     }
 }
+
+std::string Tree::getName()
+{
+    return _name;
+}

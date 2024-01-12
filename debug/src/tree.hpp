@@ -22,6 +22,7 @@ public:
     void listBranches();
     ~Tree();
     Tree(std::string name);
+    std::string getName();
 
 private:
     std::string _name;
