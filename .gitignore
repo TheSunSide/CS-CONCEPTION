@@ -1,3 +1,7 @@
 *.d
 *.o
-debug/build/*
+debug/-p
+debug/obj
+debug/debug
+debug/bin
+
