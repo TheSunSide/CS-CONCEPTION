@@ -2,3 +2,8 @@
 *.o
 debug/build/*
 .DS_Store
+debug/-p
+debug/obj
+debug/debug
+debug/bin
+

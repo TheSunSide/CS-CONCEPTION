@@ -1,50 +1,75 @@
-CXX      := -g++
-CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror -std=c++17
-LDFLAGS  := -L/usr/lib -lstdc++ -lm
-BUILD    := ./build
-OBJ_DIR  := $(BUILD)/objects
-APP_DIR  := $(BUILD)/apps
-TARGET   := program
-INCLUDE  := -Iinclude/
-SRC      :=                      \
-   $(wildcard src/module/*.cpp) \
-   $(wildcard src/*.cpp)         \
+# tool macros
+CC := g++ # FILL: the compiler
+CXX ?= # FILL: the compiler
+CFLAGS := # FILL: compile flags
+CXXFLAGS := -std=c++17 # FILL: compile flags
+DBGFLAGS := -g
+COBJFLAGS := $(CFLAGS) -c
 
-OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
-DEPENDENCIES \
-         := $(OBJECTS:.o=.d)
+# path macros
+BIN_PATH := bin
+OBJ_PATH := obj
+SRC_PATH := src
+DBG_PATH := debug
 
-all: build $(APP_DIR)/$(TARGET)
+# compile macros
+TARGET_NAME := csgames # FILL: target name
+ifeq ($(OS),Windows_NT)
+	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
+endif
+TARGET := $(BIN_PATH)/$(TARGET_NAME)
+TARGET_DEBUG := $(DBG_PATH)/$(TARGET_NAME)
 
-$(OBJ_DIR)/%.o: %.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
+# src files & obj files
+SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.cpp*)))
+OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
+OBJ_DEBUG := $(addprefix $(DBG_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
 
-$(APP_DIR)/$(TARGET): $(OBJECTS)
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -o $(APP_DIR)/$(TARGET) $^ $(LDFLAGS)
+# clean files list
+DISTCLEAN_LIST := $(OBJ) \
+                  $(OBJ_DEBUG)
+CLEAN_LIST := $(TARGET) \
+			  $(TARGET_DEBUG) \
+			  $(DISTCLEAN_LIST)
 
--include $(DEPENDENCIES)
+# default rule
+default: makedir all
 
-.PHONY: all build clean debug release info
+# non-phony targets
+$(TARGET): $(OBJ)
+	$(CC) -o $@ $(OBJ) $(CFLAGS)
 
-build:
-	@mkdir -p $(APP_DIR)
-	@mkdir -p $(OBJ_DIR)
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp*
+	$(CC) $(COBJFLAGS) -o $@ $<
 
-debug: CXXFLAGS += -DDEBUG -g
-debug: all
+$(DBG_PATH)/%.o: $(SRC_PATH)/%.cpp*
+	$(CC) $(COBJFLAGS) $(DBGFLAGS) -o $@ $<
 
-release: CXXFLAGS += -O2
-release: all
+$(TARGET_DEBUG): $(OBJ_DEBUG)
+	$(CC) $(CFLAGS) $(DBGFLAGS) $(OBJ_DEBUG) -o $@
 
+# phony rules
+
+.PHONY: run
+run: $(TARGET)
+	@$(TARGET)
+
+.PHONY: makedir
+makedir:
+	@mkdir -p $(BIN_PATH) $(OBJ_PATH) $(DBG_PATH)
+
+.PHONY: all
+all: $(TARGET)
+
+.PHONY: debug
+debug: $(TARGET_DEBUG)
+
+.PHONY: clean
 clean:
-	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(APP_DIR)/*
+	@echo CLEAN $(CLEAN_LIST)
+	@rm -f $(CLEAN_LIST)
 
-info:
-	@echo "[*] Application dir: ${APP_DIR}     "
-	@echo "[*] Object dir:      ${OBJ_DIR}     "
-	@echo "[*] Sources:         ${SRC}         "
-	@echo "[*] Objects:         ${OBJECTS}     "
-	@echo "[*] Dependencies:    ${DEPENDENCIES}"
+.PHONY: distclean
+distclean:
+	@echo CLEAN $(DISTCLEAN_LIST)
+	@rm -f $(DISTCLEAN_LIST)
