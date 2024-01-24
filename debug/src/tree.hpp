@@ -23,14 +23,16 @@ public:
     ~Tree();
     Tree(std::string name);
     std::string getName();
+    void acceptVisitor(Visitor *visitor);
 
 private:
+    void grow();
     std::string _name;
     Branch **_branches;
     int _nBranches = 0;
     int _maxBranches; // TODO set to DEFAULT_MAX
-    Swing *_swing;
+    Swing *_swing = nullptr;
 
-    friend class Visitor;
+    friend class Visitor; // TODO remove this
 };
 #endif

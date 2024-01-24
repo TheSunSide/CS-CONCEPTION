@@ -13,5 +13,8 @@ class Branch {
         Swing* mySwing = nullptr;
         int _id;
         int _length;
+        void grow();
+
+    friend class Tree;
 };
 #endif

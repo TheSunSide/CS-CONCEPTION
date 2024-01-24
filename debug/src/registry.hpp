@@ -8,6 +8,8 @@ class Registry {
         void orderList();
         void addTree(Tree* tree);
         Registry();
+        ~Registry();
+
         Tree* next();
     private:
         Tree** _trees;

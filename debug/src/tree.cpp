@@ -1,5 +1,6 @@
 #include "tree.hpp"
 #include "branch.hpp"
+#include "visitor.hpp"
 #define STARTING_LENGTH 2
 #include <iostream>
 Branch *Tree::findBranch(int id)
@@ -38,7 +39,7 @@ void Tree::addBranch(Branch branch)
 {
     if (_nBranches >= _maxBranches)
     {
-        std::cout << "reallocating" << std::endl;
+        std::cout << "reallocating Branch" << std::endl; // TODO remove this
         // TODO they need to do this whole if(){code;} code...
         _maxBranches *= 2;
         Branch **temp = new Branch *[_maxBranches];
@@ -58,6 +59,11 @@ Tree::Tree(std::string name)
     _branches = new Branch *[STARTING_LENGTH](); // TODO init at nullptr
     _maxBranches = STARTING_LENGTH;              // TODO remove this
     _nBranches = 0;                              // TODO set to 2
+}
+
+void Tree::acceptVisitor(Visitor *visitor)
+{
+    visitor->visitTree(this);
 }
 
 Tree::~Tree()
@@ -115,18 +121,30 @@ Branch *Tree::removeBranch(int id)
 
 Branch *Tree::removeLastBranch()
 {
-    auto toRemove = _branches[_nBranches];
+    auto toRemove = _branches[_nBranches-1];
     _branches[_nBranches--] = nullptr;
     return toRemove;
 }
 
 void Tree::listBranches()
 {
+    std::cout << "List of branches ID:Length" << std::endl;
     for (int i = 0; i < _nBranches; ++i)
     {
         if (_branches[i] != nullptr)
         {
-            std::cout << _branches[i]->getId() << std::endl;
+            std::cout << _branches[i]->getId() << ":" << _branches[i]->getLength() << std::endl;
+        }
+    }
+}
+
+void Tree::grow()
+{
+    for(int i = 0; i < _nBranches; ++i)
+    {
+        if(_branches[i] != nullptr)
+        {
+            _branches[i]->grow();
         }
     }
 }

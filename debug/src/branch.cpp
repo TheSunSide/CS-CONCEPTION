@@ -31,3 +31,7 @@ Branch::~Branch() {
     }
     
 }
+
+void Branch::grow() {
+    _length++;
+}
