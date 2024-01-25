@@ -2,13 +2,24 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "nodemon",
+    "test": "test",
+    "build": "rimraf out && tsc --project tsconfig.app.json"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.3",
+    "pg": "^8.11.3",
+    "rimraf": "^5.0.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.6",
+    "@types/pg": "^8.10.9",
+    "typescript": "^5.3.3"
   }
 }
