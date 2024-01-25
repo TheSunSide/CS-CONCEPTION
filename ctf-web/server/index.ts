@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import { Pool, Client } from "pg";
 import * as pg from "pg";
 import bodyparser from "body-parser";
-
+import cookieParser from "cookie-parser";
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
@@ -26,8 +26,37 @@ async function startClientPG() {
   POOL = new pg.Pool(connectionConfig);
 }
 
+function checkIllegalSQLSymbols(str: string) {
+  let illegalSymbols = [
+    "'",
+    '"',
+    ";",
+    "--",
+    "/*",
+    "*/",
+    "xp_",
+    "sp_",
+    "exec",
+    "execute",
+    "select",
+    "insert",
+    "update",
+    "delete",
+    "drop",
+    "create",
+    "alter",
+  ];
+  for (let i = 0; i < illegalSymbols.length; i++) {
+    if (str.includes(illegalSymbols[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function setupExpress() {
   let jsonParser = bodyparser.json();
+  app.use(cookieParser());
   app.listen(PORT, () => {
     console.log("Server is Successfully Running,and App is listening on port " + PORT);
   });
@@ -41,7 +70,7 @@ function setupExpress() {
   });
 
   app.get("/flag", (req, res) => {
-    res.send("FLAG{FLAG}");
+    res.send("You really thought it would be that easy? FLAGTO0EASY");
   });
 
   app.get("/posts", async (req, res) => {
@@ -58,11 +87,29 @@ function setupExpress() {
     }
   });
 
-  app.post("/user", jsonParser, async (req, res) => {
+  // QUERY HAS ID, NOT URL TODO VERIFY
+  app.get("/users", async (req, res) => {
+    let client;
+    try {
+      client = await POOL.connect();
+      const validation = await client.query(
+        "SELECT (ID,USERNAME,FIRSTNAME,LASTNAME) FROM csgames.USERS WHERE USERNAME LIKE '%" + req.query.id + "%';"
+      );
+      res.send(validation.rows);
+    } catch (error) {
+      console.log(error);
+      res.send("Error").status(404);
+    }
+    if (client) {
+      client.release();
+    }
+  });
+
+  app.post("/new-user", jsonParser, async (req, res) => {
     let body = req.body;
     if (!body || !body.name || !body.password || !body.firstname || !body.lastname) {
       console.log(body);
-      res.send("Please provide name and desc in body");
+      res.send("Please provide name and desc in body").status(404);
       return;
     }
 
@@ -72,7 +119,7 @@ function setupExpress() {
       !onlyLettersPattern.test(body.lastname) ||
       !numbersAndLettersPattern.test(body.password)
     ) {
-      res.send("Please provide only letters in name, firstname and lastname, numbers allowed for password");
+      res.send("Please provide only letters in name, firstname and lastname, numbers allowed for password").status(404);
       return;
     }
 
@@ -80,8 +127,6 @@ function setupExpress() {
 
     try {
       let client = await POOL.connect();
-
-      // TODO: Fix SQL Injection
       const validation = await client.query(
         "INSERT INTO csgames.USERS (USERNAME,PASSWORD,FIRSTNAME,LASTNAME,ISADMIN) VALUES ('" +
           user.name +
@@ -95,7 +140,44 @@ function setupExpress() {
       );
     } catch (error) {
       console.log(error);
-      res.send("Error");
+      res.send("Error").status(404);
+      return;
+    }
+    res.send("Success");
+  });
+
+  app.post("/login", jsonParser, async (req, res) => {
+    let body = req.body;
+    if (!body || !body.name || !body.password) {
+      console.log(body);
+      res.send("Please provide name and desc in body").status(404);
+      return;
+    }
+
+    if (checkIllegalSQLSymbols(body.name) || checkIllegalSQLSymbols(body.password)) {
+      res.send("Please provide a valid name, firstname and lastname, password").status(404);
+      return;
+    }
+
+    let user = body;
+
+    try {
+      let client = await POOL.connect();
+      const validation = await client.query(
+        "SELECT ID FROM csgames.USERS WHERE USERNAME = '" + user.name + "' AND PASSWORD = '" + user.password + "';"
+      );
+      if (!validation.rows[0]) {
+        res.send("User not found").status(404);
+        return;
+      }
+      if (validation.rows[0].isadmin) {
+        res.cookie("flag", "FLAGCOOKIESAREDELICIOUS");
+        return;
+      }
+      res.cookie("id", validation.rows[0].id);
+    } catch (error) {
+      console.log(error);
+      res.send("Error").status(404);
       return;
     }
     res.send("Success");
@@ -105,9 +187,16 @@ function setupExpress() {
     let body = req.body;
     if (!body || !body.name || !body.content || !body.title) {
       console.log(body);
-      res.send("Please provide name and desc in body");
+      res.send("Please provide name and desc in body").status(404);
       return;
     }
+
+    if (checkIllegalSQLSymbols(body.name)) {
+      // Let the other one be injectable for the sake of the challenge
+      res.send("Please provide a valid name, firstname and lastname, password").status(404);
+      return;
+    }
+
     let post = body;
 
     try {
@@ -115,7 +204,7 @@ function setupExpress() {
       // TODO: Fix SQL Injection
       let id = await client.query(`SELECT ID FROM csgames.USERS WHERE USERNAME = '${req.body.name}';`);
       if (!id) {
-        res.send("User not found");
+        res.send("User not found").status(404);
         return;
       }
       //console.log("ID : " + id.rows[0].id);
@@ -131,7 +220,7 @@ function setupExpress() {
       );
     } catch (error) {
       console.log(error);
-      res.send("Error");
+      res.send("Error").status(404);
       return;
     }
     res.send("Success");
@@ -141,7 +230,7 @@ function setupExpress() {
     try {
       await execQueries();
     } catch (error) {
-      res.send("Error Resetting DB");
+      res.send("Error Resetting DB").status(500);
       return;
     }
     res.send("DB Reset");

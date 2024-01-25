@@ -1,0 +1,25 @@
+<p class="title">Welcome to our application, please connect to proceed</p>
+
+<div class="centered-modal">
+  <form class="form-center" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label class="label">Username</label>
+      <div class="control">
+        <input class="input" type="text" formControlName="username" placeholder="Username">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Password</label>
+      <div class="control">
+        <input class="input" type="password" formControlName="password" placeholder="Password">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button class="is-link button-32" type="submit" [disabled]="!loginForm.valid">Login</button>
+      </div>
+    </div>
+  </form>
+</div>
