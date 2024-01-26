@@ -34,7 +34,7 @@ export class PostPageComponent implements OnInit {
       this.id = cookie.split('=')[1];
     }
     this.http.getPosts().subscribe(
-      (res) => {
+      async (res) => {
         console.log(res);
         this.posts = res as unknown as {
           id: number;
@@ -42,18 +42,21 @@ export class PostPageComponent implements OnInit {
           title: string;
           author: number;
         }[];
-        for (let i = 0; i < this.posts.length; i++) {
-          this.posts[i].content = this.sanitize.bypassSecurityTrustHtml(
-            this.posts[i].content
-          ) as string;
-        }
-        console.log(this.posts);
+        setTimeout(() => {
+          for (let i = 0; i < this.posts.length; i++) {
+            const elem = document.createElement('div');
+            elem.innerHTML = this.posts[i].content;
+            document.getElementById('post' + i)?.appendChild(elem);
+          }
+          console.log(this.posts);
+        }, 1000);
       },
       (err) => {
         console.log(err);
       }
     );
   }
+
   goToLogin() {
     this.router.navigate(['/login']);
   }
