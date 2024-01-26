@@ -38,6 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const pg = __importStar(require("pg"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 let POOL;
@@ -58,26 +59,69 @@ function startClientPG() {
         POOL = new pg.Pool(connectionConfig);
     });
 }
+function checkIllegalSQLSymbols(str) {
+    let illegalSymbols = [
+        "'",
+        '"',
+        ";",
+        "--",
+        "/*",
+        "*/",
+        "xp_",
+        "sp_",
+        "exec",
+        "execute",
+        "select",
+        "insert",
+        "update",
+        "delete",
+        "drop",
+        "create",
+        "alter",
+    ];
+    for (let i = 0; i < illegalSymbols.length; i++) {
+        if (str.includes(illegalSymbols[i])) {
+            return true;
+        }
+    }
+    return false;
+}
 function setupExpress() {
     let jsonParser = body_parser_1.default.json();
+    app.use((0, cookie_parser_1.default)());
+    app.use((req, res, next) => {
+        res.set("Access-Control-Allow-Origin", "http://localhost:4200");
+        res.set("Access-Control-Allow-Methods", "POST, OPTIONS, GET");
+        res.set("Access-Control-Allow-Headers", "Content-Type, mode, Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Authorization, Credentials");
+        res.set("Access-Control-Allow-Credentials", "true");
+        res.set("Access-Control-Max-Age", "86400");
+        next();
+    });
     app.listen(PORT, () => {
         console.log("Server is Successfully Running,and App is listening on port " + PORT);
     });
-    app.get("/", (req, res) => {
-        res.send("Hello World");
+    app.get("/api/test", (req, res) => {
+        res.json(`Working? \n DBState: ${POOL ? "Connected" : "Disconnected"}`);
     });
-    app.get("/test", (req, res) => {
-        res.send(`Working? \n DBState: ${POOL ? "Connected" : "Disconnected"}`);
+    app.get("/api/flag", (req, res) => {
+        res.json("You really thought it would be that easy? FLAGTO0EASY");
     });
-    app.get("/flag", (req, res) => {
-        res.send("FLAG{FLAG}");
-    });
-    app.get("/posts", (req, res) => __awaiter(this, void 0, void 0, function* () {
+    app.get("/api/posts", (req, res) => __awaiter(this, void 0, void 0, function* () {
         let client;
         try {
             client = yield POOL.connect();
-            const validation = yield client.query("SELECT (ID,TITLE,CONTENT,AUTHOR) FROM csgames.POSTS;");
-            res.send(validation.rows);
+            let id = req.cookies.id;
+            const check = yield client.query("SELECT ISADMIN FROM csgames.USERS WHERE USERNAME = '" + id + "';");
+            if (!check.rows[0] || !check.rows[0].isadmin) {
+                const validation = yield client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false;");
+                console.log(validation.rows);
+                res.json(validation.rows);
+            }
+            else {
+                const validation = yield client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS;");
+                console.log(validation.rows);
+                res.json(validation.rows);
+            }
         }
         catch (error) {
             console.log(error);
@@ -86,24 +130,39 @@ function setupExpress() {
             client.release();
         }
     }));
-    app.post("/user", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
+    // QUERY HAS ID, NOT URL TODO VERIFY
+    app.get("/api/users", (req, res) => __awaiter(this, void 0, void 0, function* () {
+        let client;
+        try {
+            client = yield POOL.connect();
+            const validation = yield client.query("SELECT (ID,USERNAME,FIRSTNAME,LASTNAME) FROM csgames.USERS WHERE USERNAME LIKE '%" + req.query.id + "%';");
+            res.json(validation.rows);
+        }
+        catch (error) {
+            console.log(error);
+            res.status(404).json(error);
+        }
+        if (client) {
+            client.release();
+        }
+    }));
+    app.post("/api/new-user", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
         let body = req.body;
         if (!body || !body.name || !body.password || !body.firstname || !body.lastname) {
             console.log(body);
-            res.send("Please provide name and desc in body");
+            res.status(404).json("Please provide name and desc in body");
             return;
         }
         if (!onlyLettersPattern.test(body.name) ||
             !onlyLettersPattern.test(body.firstname) ||
             !onlyLettersPattern.test(body.lastname) ||
             !numbersAndLettersPattern.test(body.password)) {
-            res.send("Please provide only letters in name, firstname and lastname, numbers allowed for password");
+            res.status(404).json("Please provide only letters in name, firstname and lastname, numbers allowed for password");
             return;
         }
         let user = body;
         try {
             let client = yield POOL.connect();
-            // TODO: Fix SQL Injection
             const validation = yield client.query("INSERT INTO csgames.USERS (USERNAME,PASSWORD,FIRSTNAME,LASTNAME,ISADMIN) VALUES ('" +
                 user.name +
                 "','" +
@@ -116,16 +175,62 @@ function setupExpress() {
         }
         catch (error) {
             console.log(error);
-            res.send("Error");
+            res.status(404).json("Error");
             return;
         }
-        res.send("Success");
+        res.cookie("id", user.name, { httpOnly: false, maxAge: 900000 });
+        res.json("Success");
     }));
-    app.post("/post", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
+    app.post("/api/login", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
+        console.log("POST /login");
+        let body = req.body;
+        if (!body || !body.username || !body.password) {
+            console.log(body);
+            console.log('Missing "username" or "password" in body');
+            res.status(404).json("Please provide name and desc in body");
+            return;
+        }
+        if (checkIllegalSQLSymbols(body.username) || checkIllegalSQLSymbols(body.password)) {
+            res.status(404).json("Please provide a valid name, firstname and lastname, password");
+            return;
+        }
+        let user = body;
+        try {
+            let client = yield POOL.connect();
+            const validation = yield client.query("SELECT ID,ISADMIN,USERNAME FROM csgames.USERS WHERE USERNAME = '" +
+                user.username +
+                "' AND PASSWORD = '" +
+                user.password +
+                "';");
+            console.log(validation.rows[0]);
+            if (!validation.rows[0]) {
+                res.status(404).json("User not found");
+                return;
+            }
+            if (validation.rows[0].isadmin) {
+                console.log('Admin logged in, setting cookie "flag" to "FLAGCOOKIESAREDELICIOUS"');
+                res.cookie("flag", "FLAGCOOKIESAREDELICIOUS", { httpOnly: false, maxAge: 900000 });
+            }
+            res.cookie("id", validation.rows[0].username, { httpOnly: false, maxAge: 900000 });
+        }
+        catch (error) {
+            console.log(error);
+            res.status(404).json("Error");
+            return;
+        }
+        console.log("Success");
+        res.json("Success");
+    }));
+    app.post("/api/post", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
         let body = req.body;
         if (!body || !body.name || !body.content || !body.title) {
             console.log(body);
-            res.send("Please provide name and desc in body");
+            res.json("Please provide name and desc in body").status(404);
+            return;
+        }
+        if (checkIllegalSQLSymbols(body.name)) {
+            // Let the other one be injectable for the sake of the challenge
+            res.json("Please provide a valid name, firstname and lastname, password").status(404);
             return;
         }
         let post = body;
@@ -134,7 +239,7 @@ function setupExpress() {
             // TODO: Fix SQL Injection
             let id = yield client.query(`SELECT ID FROM csgames.USERS WHERE USERNAME = '${req.body.name}';`);
             if (!id) {
-                res.send("User not found");
+                res.status(404).json("User not found");
                 return;
             }
             //console.log("ID : " + id.rows[0].id);
@@ -149,21 +254,57 @@ function setupExpress() {
         }
         catch (error) {
             console.log(error);
-            res.send("Error");
+            res.status(404).json(error);
             return;
         }
-        res.send("Success");
+        res.json("Success");
     }));
-    app.post("/reset", (req, res) => __awaiter(this, void 0, void 0, function* () {
+    app.post("/api/reset", (req, res) => __awaiter(this, void 0, void 0, function* () {
         try {
             yield execQueries();
         }
         catch (error) {
-            res.send("Error Resetting DB");
+            res.status(500).json("Error Resetting DB");
             return;
         }
-        res.send("DB Reset");
+        res.json("DB Reset");
     }));
+    app.post("/api/new-post", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
+        let body = req.body;
+        if (!body || !body.title || !body.content || !body.id) {
+            console.log(body);
+            res.status(404).json("Please provide title and content in body");
+            return;
+        }
+        if (checkIllegalSQLSymbols(body.title) || checkIllegalSQLSymbols(body.id)) {
+            res.status(404).json("Please provide a valid title and id");
+            return;
+        }
+        let post = body;
+        try {
+            let client = yield POOL.connect();
+            const ids = yield client.query("SELECT ID FROM csgames.USERS WHERE USERNAME = '" + post.id + "';");
+            if (!ids.rows[0]) {
+                res.status(404).json("User not found");
+                return;
+            }
+            const validation = yield client.query("INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('" +
+                post.title +
+                "','" +
+                post.content +
+                "','" +
+                ids.rows[0].id +
+                "'," +
+                "false);");
+        }
+        catch (error) {
+            console.log(error);
+            res.status(400).json(error);
+            return;
+        }
+        res.json("Success");
+    }));
+    console.log("Done Setting up Express");
 }
 function execQueries() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -192,7 +333,7 @@ function execQueries() {
                 "INSERT INTO csgames.USERS (USERNAME,PASSWORD,FIRSTNAME,LASTNAME,ISADMIN) VALUES ('dumb','user','dumb','user',false);" +
                 "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('First Post','This is my first post, I hope you like it!',2,false);" +
                 "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Second Post','This is my second post, I hope you like it!',2,false);" +
-                "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Third Post','FlagOhOHOOhSNEAKY',2,false);" +
+                "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Third Post','FlagOhOHOOhSNEAKY',2,true);" +
                 "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Fourth Post','This is my fourth post, Help, I dont have it, im desperate!',2,false);");
         }
         catch (error) {
