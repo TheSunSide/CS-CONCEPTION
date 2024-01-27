@@ -101,6 +101,7 @@ function setupExpress() {
         console.log("Server is Successfully Running,and App is listening on port " + PORT);
     });
     app.get("/api/test", (req, res) => {
+        console.log("GET /test");
         res.json(`Working? \n DBState: ${POOL ? "Connected" : "Disconnected"}`);
     });
     app.get("/api/flag", (req, res) => {
@@ -114,12 +115,12 @@ function setupExpress() {
             const check = yield client.query("SELECT ISADMIN FROM csgames.USERS WHERE USERNAME = '" + id + "';");
             if (!check.rows[0] || !check.rows[0].isadmin) {
                 const validation = yield client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false;");
-                console.log(validation.rows);
+                //console.log(validation.rows);
                 res.json(validation.rows);
             }
             else {
                 const validation = yield client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS;");
-                console.log(validation.rows);
+                //console.log(validation.rows);
                 res.json(validation.rows);
             }
         }
@@ -218,7 +219,10 @@ function setupExpress() {
             res.status(404).json("Please provide name and desc in body");
             return;
         }
-        if (checkIllegalSQLSymbols(body.username) || checkIllegalSQLSymbols(body.password)) {
+        if (typeof body.username != "string" ||
+            typeof body.password != "string" ||
+            checkIllegalSQLSymbols(body.username) ||
+            checkIllegalSQLSymbols(body.password)) {
             res.status(404).json("Please provide a valid name, firstname and lastname, password");
             return;
         }
@@ -249,44 +253,45 @@ function setupExpress() {
         console.log("Success");
         res.json("Success");
     }));
-    app.post("/api/post", jsonParser, (req, res) => __awaiter(this, void 0, void 0, function* () {
-        let body = req.body;
-        if (!body || !body.name || !body.content || !body.title) {
-            console.log(body);
-            res.json("Please provide name and desc in body").status(404);
-            return;
-        }
-        if (checkIllegalSQLSymbols(body.name)) {
-            // Let the other one be injectable for the sake of the challenge
-            res.json("Please provide a valid name, firstname and lastname, password").status(404);
-            return;
-        }
-        let post = body;
-        try {
-            let client = yield POOL.connect();
-            // TODO: Fix SQL Injection
-            let id = yield client.query(`SELECT ID FROM csgames.USERS WHERE USERNAME = '${req.body.name}';`);
-            if (!id) {
-                res.status(404).json("User not found");
-                return;
-            }
-            //console.log("ID : " + id.rows[0].id);
-            const validation = yield client.query("INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('" +
-                post.title +
-                "','" +
-                post.content +
-                "','" +
-                id.rows[0].id +
-                "'," +
-                "false);");
-        }
-        catch (error) {
-            console.log(error);
-            res.status(404).json(error);
-            return;
-        }
-        res.json("Success");
-    }));
+    // app.post("/api/post", jsonParser, async (req, res) => {
+    //   let body = req.body;
+    //   if (!body || !body.name || !body.content || !body.title) {
+    //     console.log(body);
+    //     res.json("Please provide name and desc in body").status(404);
+    //     return;
+    //   }
+    //   if (typeof body.name != "string" || checkIllegalSQLSymbols(body.name)) {
+    //     // Let the other one be injectable for the sake of the challenge
+    //     res.json("Please provide a valid name, firstname and lastname, password").status(404);
+    //     return;
+    //   }
+    //   let post = body;
+    //   try {
+    //     let client = await POOL.connect();
+    //     // TODO: Fix SQL Injection
+    //     let id = await client.query(`SELECT ID FROM csgames.USERS WHERE USERNAME = '${req.body.name}';`);
+    //     if (!id) {
+    //       res.status(404).json("User not found");
+    //       return;
+    //     }
+    //     //console.log("ID : " + id.rows[0].id);
+    //     const validation = await client.query(
+    //       "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('" +
+    //         post.title +
+    //         "','" +
+    //         post.content +
+    //         "','" +
+    //         id.rows[0].id +
+    //         "'," +
+    //         "false);"
+    //     );
+    //   } catch (error) {
+    //     console.log(error);
+    //     res.status(404).json(error);
+    //     return;
+    //   }
+    //   res.json("Success");
+    // });
     app.post("/api/reset", (req, res) => __awaiter(this, void 0, void 0, function* () {
         try {
             yield execQueries();
@@ -304,7 +309,11 @@ function setupExpress() {
             res.status(404).json("Please provide title and content in body");
             return;
         }
-        if (checkIllegalSQLSymbols(body.title) || checkIllegalSQLSymbols(body.id)) {
+        console.log(body);
+        if (typeof body.title != "string" ||
+            typeof body.id != "string" ||
+            checkIllegalSQLSymbols(body.title) ||
+            checkIllegalSQLSymbols(body.id)) {
             res.status(404).json("Please provide a valid title and id");
             return;
         }
@@ -352,7 +361,7 @@ function execQueries() {
                 ");" +
                 "CREATE TABLE POSTS (" +
                 "ID SERIAL PRIMARY KEY," +
-                "TITLE VARCHAR(255) UNIQUE NOT NULL," +
+                "TITLE VARCHAR(255) NOT NULL," +
                 "CONTENT TEXT NOT NULL," +
                 "AUTHOR INTEGER NOT NULL," +
                 "ISSECRET BOOLEAN NOT NULL," +
@@ -362,7 +371,7 @@ function execQueries() {
                 "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('First Post','This is my first post, I hope you like it!',2,false);" +
                 "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Second Post','This is my second post, I hope you like it!',2,false);" +
                 "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Third Post','FlagOhOHOOhSNEAKY',2,true);" +
-                "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Fourth Post','This is my fourth post, Help, I dont have it, im desperate!',2,false);");
+                "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Fourth Post','This is my fourth post, Help, I dont have the 3rd post, im desperate!',2,false);");
         }
         catch (error) {
             console.log(error);

@@ -72,6 +72,7 @@ function setupExpress() {
   });
 
   app.get("/api/test", (req, res) => {
+    console.log("GET /test");
     res.json(`Working? \n DBState: ${POOL ? "Connected" : "Disconnected"}`);
   });
 
@@ -90,11 +91,11 @@ function setupExpress() {
         const validation = await client.query(
           "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false;"
         );
-        console.log(validation.rows);
+        //console.log(validation.rows);
         res.json(validation.rows);
       } else {
         const validation = await client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS;");
-        console.log(validation.rows);
+        //console.log(validation.rows);
         res.json(validation.rows);
       }
     } catch (error) {
@@ -206,7 +207,12 @@ function setupExpress() {
       return;
     }
 
-    if (checkIllegalSQLSymbols(body.username) || checkIllegalSQLSymbols(body.password)) {
+    if (
+      typeof body.username != "string" ||
+      typeof body.password != "string" ||
+      checkIllegalSQLSymbols(body.username) ||
+      checkIllegalSQLSymbols(body.password)
+    ) {
       res.status(404).json("Please provide a valid name, firstname and lastname, password");
       return;
     }
@@ -241,48 +247,48 @@ function setupExpress() {
     res.json("Success");
   });
 
-  app.post("/api/post", jsonParser, async (req, res) => {
-    let body = req.body;
-    if (!body || !body.name || !body.content || !body.title) {
-      console.log(body);
-      res.json("Please provide name and desc in body").status(404);
-      return;
-    }
+  // app.post("/api/post", jsonParser, async (req, res) => {
+  //   let body = req.body;
+  //   if (!body || !body.name || !body.content || !body.title) {
+  //     console.log(body);
+  //     res.json("Please provide name and desc in body").status(404);
+  //     return;
+  //   }
 
-    if (checkIllegalSQLSymbols(body.name)) {
-      // Let the other one be injectable for the sake of the challenge
-      res.json("Please provide a valid name, firstname and lastname, password").status(404);
-      return;
-    }
+  //   if (typeof body.name != "string" || checkIllegalSQLSymbols(body.name)) {
+  //     // Let the other one be injectable for the sake of the challenge
+  //     res.json("Please provide a valid name, firstname and lastname, password").status(404);
+  //     return;
+  //   }
 
-    let post = body;
+  //   let post = body;
 
-    try {
-      let client = await POOL.connect();
-      // TODO: Fix SQL Injection
-      let id = await client.query(`SELECT ID FROM csgames.USERS WHERE USERNAME = '${req.body.name}';`);
-      if (!id) {
-        res.status(404).json("User not found");
-        return;
-      }
-      //console.log("ID : " + id.rows[0].id);
-      const validation = await client.query(
-        "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('" +
-          post.title +
-          "','" +
-          post.content +
-          "','" +
-          id.rows[0].id +
-          "'," +
-          "false);"
-      );
-    } catch (error) {
-      console.log(error);
-      res.status(404).json(error);
-      return;
-    }
-    res.json("Success");
-  });
+  //   try {
+  //     let client = await POOL.connect();
+  //     // TODO: Fix SQL Injection
+  //     let id = await client.query(`SELECT ID FROM csgames.USERS WHERE USERNAME = '${req.body.name}';`);
+  //     if (!id) {
+  //       res.status(404).json("User not found");
+  //       return;
+  //     }
+  //     //console.log("ID : " + id.rows[0].id);
+  //     const validation = await client.query(
+  //       "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('" +
+  //         post.title +
+  //         "','" +
+  //         post.content +
+  //         "','" +
+  //         id.rows[0].id +
+  //         "'," +
+  //         "false);"
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(404).json(error);
+  //     return;
+  //   }
+  //   res.json("Success");
+  // });
 
   app.post("/api/reset", async (req, res) => {
     try {
@@ -302,7 +308,13 @@ function setupExpress() {
       return;
     }
 
-    if (checkIllegalSQLSymbols(body.title) || checkIllegalSQLSymbols(body.id)) {
+    console.log(body);
+    if (
+      typeof body.title != "string" ||
+      typeof body.id != "string" ||
+      checkIllegalSQLSymbols(body.title) ||
+      checkIllegalSQLSymbols(body.id)
+    ) {
       res.status(404).json("Please provide a valid title and id");
       return;
     }
@@ -355,7 +367,7 @@ async function execQueries() {
         ");" +
         "CREATE TABLE POSTS (" +
         "ID SERIAL PRIMARY KEY," +
-        "TITLE VARCHAR(255) UNIQUE NOT NULL," +
+        "TITLE VARCHAR(255) NOT NULL," +
         "CONTENT TEXT NOT NULL," +
         "AUTHOR INTEGER NOT NULL," +
         "ISSECRET BOOLEAN NOT NULL," +
