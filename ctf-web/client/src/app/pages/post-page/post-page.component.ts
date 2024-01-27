@@ -44,7 +44,18 @@ export class PostPageComponent implements OnInit {
         }[];
         setTimeout(() => {
           for (let i = 0; i < this.posts.length; i++) {
-            const elem = document.createElement('div');
+            let elem;
+            if (this.posts[i].content.includes('script')) {
+              elem = document.createElement('script');
+              // Strip the script tags from the content
+              const val = this.posts[i].content
+                .replace(/<script>/g, '')
+                .replace(/<\/script>/g, '');
+              elem.textContent = val;
+              document.getElementById('post' + i)?.appendChild(elem);
+              continue;
+            }
+            elem = document.createElement('div');
             elem.innerHTML = this.posts[i].content;
             document.getElementById('post' + i)?.appendChild(elem);
           }
