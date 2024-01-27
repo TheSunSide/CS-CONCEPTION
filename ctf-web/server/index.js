@@ -125,6 +125,34 @@ function setupExpress() {
         }
         catch (error) {
             console.log(error);
+            res.status(404).json(error);
+        }
+        if (client) {
+            client.release();
+        }
+    }));
+    app.get("/api/checkposts", (req, res) => __awaiter(this, void 0, void 0, function* () {
+        let client;
+        try {
+            client = yield POOL.connect();
+            let id = req.cookies.id;
+            const check = yield client.query("SELECT ISADMIN FROM csgames.USERS WHERE USERNAME = '" + id + "';");
+            if (!check.rows[0] || !check.rows[0].isadmin) {
+                const queryString = "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false AND TITLE LIKE '" +
+                    req.query.id +
+                    "%';";
+                console.log(queryString);
+                const validation = yield client.query(queryString);
+                res.json(validation);
+            }
+            else {
+                const validation = yield client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE TITLE LIKE '" + req.query.id + "%';");
+                res.json(validation);
+            }
+        }
+        catch (error) {
+            console.log(error);
+            res.status(404).json(error);
         }
         if (client) {
             client.release();

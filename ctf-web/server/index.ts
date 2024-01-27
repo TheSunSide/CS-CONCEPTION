@@ -99,6 +99,37 @@ function setupExpress() {
       }
     } catch (error) {
       console.log(error);
+      res.status(404).json(error);
+    }
+    if (client) {
+      client.release();
+    }
+  });
+
+  app.get("/api/checkposts", async (req, res) => {
+    let client;
+    try {
+      client = await POOL.connect();
+
+      let id = req.cookies.id;
+      const check = await client.query("SELECT ISADMIN FROM csgames.USERS WHERE USERNAME = '" + id + "';");
+      if (!check.rows[0] || !check.rows[0].isadmin) {
+        const queryString =
+          "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false AND TITLE LIKE '" +
+          req.query.id +
+          "%';";
+        console.log(queryString);
+        const validation: pg.QueryResult<any> = await client.query(queryString);
+        res.json(validation);
+      } else {
+        const validation = await client.query(
+          "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE TITLE LIKE '" + req.query.id + "%';"
+        );
+        res.json(validation);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(404).json(error);
     }
     if (client) {
       client.release();
@@ -337,7 +368,7 @@ async function execQueries() {
         "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('First Post','This is my first post, I hope you like it!',2,false);" +
         "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Second Post','This is my second post, I hope you like it!',2,false);" +
         "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Third Post','FlagOhOHOOhSNEAKY',2,true);" +
-        "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Fourth Post','This is my fourth post, Help, I dont have it, im desperate!',2,false);"
+        "INSERT INTO csgames.POSTS (TITLE,CONTENT,AUTHOR,ISSECRET) VALUES ('Fourth Post','This is my fourth post, Help, I dont have the 3rd post, im desperate!',2,false);"
     );
   } catch (error) {
     console.log(error);

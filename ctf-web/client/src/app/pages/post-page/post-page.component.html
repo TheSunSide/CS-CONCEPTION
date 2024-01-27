@@ -3,6 +3,7 @@
   <h2> Is connected ?</h2>
   <div>{{isConnected}}</div>
   <button mat-button color="primary" (click)="goToLogin()">Go To Login</button>
+  <input type="text" [(ngModel)]="search" (input)="onSearch()" placeholder="Search Post by Title">
 </div>
 <div class="centered-simple">
   <h2>Create a post</h2>

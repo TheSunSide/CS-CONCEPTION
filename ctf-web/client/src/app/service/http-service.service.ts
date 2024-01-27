@@ -12,6 +12,13 @@ export class HttpServiceService {
     return this.http.get<HttpResponse<any>>('http://localhost:4200/api/posts');
   }
 
+  getPostsWithScope(id: string) {
+    const url = new URL('http://localhost:4200/api/checkposts');
+    url.searchParams.append('id', id);
+    console.log(url.toString());
+    return this.http.get<HttpResponse<any>>(url.toString());
+  }
+
   login(data: any) {
     return this.http.post<HttpResponse<string>>(
       'http://localhost:4200/api/login',
