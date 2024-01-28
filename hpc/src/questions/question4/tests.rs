@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn test() {
+fn exhaustive_test() {
     let to_integrate: Vec<f32> = (0..=500).into_iter().map(|i| i as f32 / 100.0).collect();
     let given_results = numerical_integration_gpu(&to_integrate);
     let expected_results = numerical_integration_cpu(&to_integrate);

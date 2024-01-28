@@ -3,7 +3,7 @@ use crate::questions::question3::naive_xor_chunks;
 use rand::{thread_rng, RngCore};
 
 #[test]
-fn is_xoring() {
+fn monkey_test() {
     let mut thread_rng = thread_rng();
     let mut a = [0u8; 4096];
     thread_rng.fill_bytes(&mut a);
