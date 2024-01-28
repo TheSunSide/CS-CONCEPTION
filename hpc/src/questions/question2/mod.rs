@@ -9,10 +9,14 @@ use std::{
     thread,
 };
 
+fn get_first_digit(number: f64) -> u64 {
+    (number / 10f64.powi(number.log10().floor() as i32)) as u64
+}
+
 pub fn single_threaded_computation(to_compute: &[f64]) -> u64 {
     let mut sum = 0;
     for &x in to_compute {
-        sum += (x.exp() / 10f64.powi(x.exp().log10().floor() as i32)) as u64;
+        sum += get_first_digit(x.exp());
     }
     sum
 }
@@ -38,7 +42,7 @@ pub fn multi_threaded_computation_solution(to_compute: &[f64]) -> u64 {
         let worker = thread::spawn(move || {
             let internal_sum: u64 = to_compute_slice
                 .into_iter()
-                .map(|x| (x.exp() / 10f64.powi(x.exp().log10().floor() as i32)) as u64)
+                .map(|x| get_first_digit(x.exp()))
                 .sum();
             sum.fetch_add(internal_sum, Ordering::Relaxed);
         });
