@@ -39,6 +39,7 @@ const express_1 = __importDefault(require("express"));
 const pg = __importStar(require("pg"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 let POOL;
@@ -99,6 +100,10 @@ function setupExpress() {
     });
     app.listen(PORT, () => {
         console.log("Server is Successfully Running,and App is listening on port " + PORT);
+    });
+    app.use(express_1.default.static(path_1.default.join(__dirname, "/tbhacked")));
+    app.get("*", (req, res) => {
+        res.sendFile(path_1.default.join(__dirname, "/tbhacked/index.html"));
     });
     app.get("/api/test", (req, res) => {
         console.log("GET /test");

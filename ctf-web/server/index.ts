@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import * as pg from "pg";
 import bodyparser from "body-parser";
 import cookieParser from "cookie-parser";
+import path from "path";
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
@@ -69,6 +70,12 @@ function setupExpress() {
   });
   app.listen(PORT, () => {
     console.log("Server is Successfully Running,and App is listening on port " + PORT);
+  });
+
+  app.use(express.static(path.join(__dirname, "/tbhacked")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "/tbhacked/index.html"));
   });
 
   app.get("/api/test", (req, res) => {
