@@ -10,7 +10,7 @@ Après que vous croyiez avoir atteint le sommet de la performance, vous apprenez
 
 # Comment répondre aux questions
 
-Dans le dossier src, il y a un module question avec des todos pour chaque question. Vu la complexité de cette section, des tests unitaires vont sont fournis pour vérifier le fonctionnement et la performance de vos calculs. Pour tester le fonctionnement d'une question faite `cargo test **questionX**`. Pour tester la performance d'une question faite `cargo bench **questionX**`. Des exemples d'implémentations naives sont utilisé pour les tests de fonctionnalitées et de performance, vos implémentations **doivent** être plus rapide. N'hésitez pas à partir un cargo build dès maintenant pour compiler les dépendances. Suivez les Warnings pour trouver le code à compléter.
+Dans le dossier src, il y a un module question avec des todos pour chaque question. Vu la complexité de cette section, des tests unitaires vont sont fournis pour vérifier le fonctionnement et la performance de vos calculs. Pour tester le fonctionnement d'une question faite `cargo test **questionX**`. Pour tester la performance d'une question faites `cargo bench **questionX**`. Des exemples d'implémentations naives sont utilisé pour les tests de fonctionnalitées et de performance, vos implémentations **doivent** être plus rapide. N'hésitez pas à partir un cargo build dès maintenant pour compiler les dépendances. Suivez les Warnings pour trouver le code à compléter.
 
 ## Question 1 (Facile) - Parallélisation avec Rayon
 
