@@ -10,21 +10,26 @@ Après que vous croyiez avoir atteint le sommet de la performance, vous apprenez
 
 # Comment répondre aux questions
 
-Dans le dossier src, il y a un module question avec des todos pour chaque question. Vu la complexité de cette section, des tests unitaires vont sont fournis pour vérifier le fonctionnement et la performance de vos calcul. Pour tester le fonctionnement d'une question faite `cargo test **questionX**`. Pour tester la performance d'une question faite `cargo bench **questionX**`. Des exemples d'implémentation naive sont utilisé pour les tests de fonctionnalitées et de performance, vos implémentations **doivent** être plus rapide.
+Dans le dossier src, il y a un module question avec des todos pour chaque question. Vu la complexité de cette section, des tests unitaires vont sont fournis pour vérifier le fonctionnement et la performance de vos calculs. Pour tester le fonctionnement d'une question faite `cargo test **questionX**`. Pour tester la performance d'une question faite `cargo bench **questionX**`. Des exemples d'implémentations naives sont utilisé pour les tests de fonctionnalitées et de performance, vos implémentations **doivent** être plus rapide. N'hésitez pas à partir un cargo build dès maintenant pour compiler les dépendances.
 
 ## Question 1 (Facile) - Parallélisation avec Rayon
 
 ### Mise en contexte
 
-La parallélisation avec rayon est très facile à utiliser pour augmenter la performance, mais il faut l'utiliser au bon endroit.
+La parallélisation avec rayon est très facile à utiliser pour augmenter la performance, mais il faut l'utiliser au bon endroit et écrire le code avec des itérateurs de manière fonctionnelle.
 
 ### Ce que vous devez faire
 
-Trouvez l'endroit le plus approprié pour mettre l'itérateur parallèle de Rayon.
+Parallélisez le code avec rayon qui calcule le factoriel d'un vecteur. Vous devez utilisez la même logique qui vous est fournis pour calculer le factoriel. Vous devez aussi ne pas utilisez de for loops dans ce code que des itérateurs. (Pas de caching ou de prime swing factorial)
 
 ## Question 2 (Medium) - Parallélisation simple à la main
 
-## Question 3 (Facile) - simple SIMD
+### Mise en contexte
+
+### Ce que vous devez faire
+
+
+## Question 3 (Facile) - du SIMD et des XORs
 
 ### Consigne pour cette question
 
@@ -37,3 +42,30 @@ Il existe un algorithme de cryptographie mathématiquement indéchiffrable, mais
 ### Ce que vous devez faire
 
 Utilisez du SIMD pour accélérer la fonction xor_chunks() qui consiste à donner le résultat du xor de deux chunks de donnée. Tous les points sont donnés pour la performance.
+
+## Question 4 (difficile) - intégration numérique sur le GPU
+
+### Consignes pour cette question
+
+Cette question est difficile et nécessite d'écrire du WGSL. Ce langage ressemble beaucoup au Rust, mais ne perdez pas de temps si vous ne voulez pas écrire de shader. Une courte introduction au WGSL est disponible en ligne à [https://google.github.io/tour-of-wgsl/](https://google.github.io/tour-of-wgsl/). (WebGPU n'est stabilisé que sur chromium donc il vous faut un navigateur basé sur chromium)
+
+### Mise en contexte
+
+L'intégration numérique est une technique pour obtenir l'intégrale de fonction n'ayant pas de primitive, mais pouvant être intégré. Un exemple de ces fonctions est la loi normale. Le calcul de l'intégrale entre moins l'infini et x permet de calculer la PDF de la loi normale et est très pratique en statistique. Pour intégrer de manière numérique la manière la plus simple est de diviser la zone d'intégration en un nombre N de rectangle et ensuite calculer la somme de l'aire de ces N rectangles. Voici un exemple avec une fonction quelquonque.
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Integration_rectangle.svg/1024px-Integration_rectangle.svg.png)
+
+Voici l'intégrale de la loi normale et une simplification pour x >= 0.
+
+$ f(x) = \frac{e^{-\frac{1}{2} x^2}}{\sqrt{2 \pi}} $
+
+$ F(x) = \int_{-\infty}^{x} f(x) dx $
+
+$ F(x) = 0.5 + \int_{0}^{x} f(x) dx $
+
+Ce qui peut être approximé par l'intégration numérique par rectangle
+
+$ F(x) \approx  0.5 + \sum_{i = 0}^{N} \frac{x}{N} \cdot f((i + 0.5) \cdot \frac{x}{N}) $
+
+### Ce que vous devez faire
+
+Vous devez écrire un shader WGSL qui intègre une liste de x avec l'intégration numérique avec 32768 rectangles. Les x vont toujours être positif. Ce n'est pas grave si la carte graphique est plus lente que le CPU dans ce cas vu qu'il faut une carte graphique décente pour voir les différences et pas des graphiques intégrés de portable.

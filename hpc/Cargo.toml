@@ -5,16 +5,17 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[profile.release]
-codegen-units = 1
-lto = "fat"
-
 [dependencies]
+bytemuck = "1.14.1"
+flume = "0.11.0"
+pollster = "0.3.0"
 rand = "0.8.5"
+rayon = "1.8.1"
+wgpu = { version = "0.19.1", features = ["vulkan-portability"] }
 
 [dev-dependencies]
 criterion = { version = "0.4", features = ["html_reports"] }
 
 [[bench]]
-name = "question3"
+name = "bench"
 harness = false

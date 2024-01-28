@@ -13,6 +13,7 @@ pub fn naive_xor_chunks(a: [u8; 4096], b: [u8; 4096]) -> [u8; 4096] {
 }
 
 /// TODO xor each byte of a with each byte of b and return the result faster than the naive implementation with SIMD
+/// You can use the experimental features array_chunks and portable_simd.
 pub fn xor_chunks(a: [u8; 4096], b: [u8; 4096]) -> [u8; 4096] {
     naive_xor_chunks(a, b)
 }
