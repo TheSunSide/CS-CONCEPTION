@@ -10,7 +10,7 @@ Après que vous croyiez avoir atteint le sommet de la performance, vous apprenez
 
 # Comment répondre aux questions
 
-Dans le dossier src, il y a un module question avec des todos pour chaque question. Vu la complexité de cette section, des tests unitaires vont sont fournis pour vérifier le fonctionnement et la performance de vos calculs. Pour tester le fonctionnement d'une question faite `cargo test **questionX**`. Pour tester la performance d'une question faite `cargo bench **questionX**`. Des exemples d'implémentations naives sont utilisé pour les tests de fonctionnalitées et de performance, vos implémentations **doivent** être plus rapide. N'hésitez pas à partir un cargo build dès maintenant pour compiler les dépendances.
+Dans le dossier src, il y a un module question avec des todos pour chaque question. Vu la complexité de cette section, des tests unitaires vont sont fournis pour vérifier le fonctionnement et la performance de vos calculs. Pour tester le fonctionnement d'une question faite `cargo test **questionX**`. Pour tester la performance d'une question faite `cargo bench **questionX**`. Des exemples d'implémentations naives sont utilisé pour les tests de fonctionnalitées et de performance, vos implémentations **doivent** être plus rapide. N'hésitez pas à partir un cargo build dès maintenant pour compiler les dépendances. Suivez les Warnings pour trouver le code à compléter.
 
 ## Question 1 (Facile) - Parallélisation avec Rayon
 
@@ -20,14 +20,15 @@ La parallélisation avec rayon est très facile à utiliser pour augmenter la pe
 
 ### Ce que vous devez faire
 
-Parallélisez le code avec rayon qui calcule le factoriel d'un vecteur. Vous devez utilisez la même logique qui vous est fournis pour calculer le factoriel. Vous devez aussi ne pas utilisez de for loops dans ce code que des itérateurs. (Pas de caching ou de prime swing factorial)
+Parallélisez le code avec rayon qui calcule le factoriel d'un vecteur. Vous devez utilisez la même logique qui vous est fournis pour calculer le factoriel. Vous devez aussi ne pas utiliser de for loops dans ce code que des itérateurs. (Pas de caching ou de prime swing factorial)
 
 ## Question 2 (Medium) - Parallélisation simple à la main
 
 ### Mise en contexte
+Rayon est très utile pour parallèliser rapidement, mais il arrive souvent des problèmes où la parallélisation doit être fait à la main dû à des contraintes entre le partage des ressources.
 
 ### Ce que vous devez faire
-
+Vous devez faire la somme du premier chiffre de la puissance de e chaque entrée d'un vecteur de manière parallèle sans utiliser rayon (juste des std::thread). La somme doit rester dans une variable partagée entre les threads, mais elle peut être actualisé qu'à la fin du thread. (Ne peut pas être envoyer comme valeur de retour) Vous pouvez attendre après le thread avec un join. Ex: si les entrées sont 0, 1, 2, 3, 4 les puissances seront **1**, **2**.71..., **7**,38..., **2**0,08..., **5**4,60... et les premiers chiffres seront 1, 2, 7, 2, 5 et la somme sera 17. Vous pouvez supposer que la machine a 8 coeurs et que les entrées sont divisibles par 8 et qu'il y a plus que 8 entrées.
 
 ## Question 3 (Facile) - du SIMD et des XORs
 
@@ -47,7 +48,7 @@ Utilisez du SIMD pour accélérer la fonction xor_chunks() qui consiste à donne
 
 ### Consignes pour cette question
 
-Cette question est difficile et nécessite d'écrire du WGSL. Ce langage ressemble beaucoup au Rust, mais ne perdez pas de temps si vous ne voulez pas écrire de shader. Une courte introduction au WGSL est disponible en ligne à [https://google.github.io/tour-of-wgsl/](https://google.github.io/tour-of-wgsl/). (WebGPU n'est stabilisé que sur chromium donc il vous faut un navigateur basé sur chromium)
+Cette question est difficile et nécessite d'écrire du WGSL. Ce langage ressemble beaucoup au Rust, mais ne perdez pas de temps si vous ne voulez pas écrire de shader. Une courte introduction au WGSL est disponible en ligne à [https://google.github.io/tour-of-wgsl/](https://google.github.io/tour-of-wgsl/). (WebGPU n'est stabilisé que sur chromium donc il vous faut un navigateur basé sur chromium pour voir ce lien)
 
 ### Mise en contexte
 

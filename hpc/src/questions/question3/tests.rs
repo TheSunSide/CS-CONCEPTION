@@ -1,5 +1,4 @@
-use super::xor_chunks;
-use crate::questions::question3::naive_xor_chunks;
+use super::*;
 use rand::{thread_rng, RngCore};
 
 #[test]
