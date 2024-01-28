@@ -26,7 +26,7 @@ pub fn numerical_integration_cpu(to_integrate: &[f32]) -> Vec<f32> {
 }
 
 pub fn numerical_integration_gpu(to_integrate: &[f32]) -> Vec<f32> {
-    todo!("write a shader to compute the integral of the normal distribution. You don't need to write any Rust code to make the shader work. See shader.wgsl");
+    todo!("Write a shader to compute the integral of the normal distribution. You don't need to write any Rust code to make the shader work. See shader.wgsl");
     pollster::block_on(apply_function_gpu(
         include_str!("shader.wgsl"),
         to_integrate,

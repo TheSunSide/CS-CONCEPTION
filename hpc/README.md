@@ -16,7 +16,7 @@ Dans le dossier src, il y a un module question avec des todos pour chaque questi
 
 ### Mise en contexte
 
-La parallélisation avec rayon est très facile à utiliser pour augmenter la performance, mais il faut l'utiliser au bon endroit et écrire le code avec des itérateurs de manière fonctionnelle.
+La parallélisation avec [rayon](https://github.com/rayon-rs/rayon) est très facile à utiliser pour augmenter la performance, mais il faut l'utiliser au bon endroit et écrire le code avec des itérateurs de manière fonctionnelle.
 
 ### Ce que vous devez faire
 
@@ -42,7 +42,7 @@ Il existe un algorithme de cryptographie mathématiquement indéchiffrable, mais
 
 ### Ce que vous devez faire
 
-Utilisez du SIMD pour accélérer la fonction xor_chunks() qui consiste à donner le résultat du xor de deux chunks de donnée. Tous les points sont donnés pour la performance.
+Utilisez du SIMD pour accélérer la fonction xor_chunks() qui consiste à donner le résultat du xor de deux chunks de donnée.
 
 ## Question 4 (difficile) - intégration numérique sur le GPU
 

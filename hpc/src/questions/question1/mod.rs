@@ -16,7 +16,7 @@ pub fn single_threaded_computation(to_compute: &[u8]) -> Vec<f64> {
 }
 
 pub fn multi_threaded_computation(to_compute: &[u8]) -> Vec<f64> {
-    todo!("make this function multi-threaded with Rayon by writing it in a functional way. No for loop are allowed.");
+    todo!("Make this function multi-threaded with Rayon by writing it in a functional way. No for loop are allowed.");
 }
 
 pub fn multi_threaded_computation_solution(to_compute: &[u8]) -> Vec<f64> {
