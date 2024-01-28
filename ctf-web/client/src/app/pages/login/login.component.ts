@@ -41,7 +41,10 @@ export class LoginComponent implements OnInit {
 
   constructor(private router: Router, private http: HttpServiceService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log(this.router.url);
+    console.log(document.location.hostname);
+  }
 
   async onSubmit() {
     console.log('submitting: ', this.loginForm.value);

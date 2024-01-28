@@ -9,50 +9,36 @@ export class HttpServiceService {
   constructor(private http: HttpClient) {}
 
   getPosts() {
-    return this.http.get<HttpResponse<any>>('http://localhost:4200/api/posts');
+    return this.http.get<HttpResponse<any>>('/api/posts');
   }
 
   getPostsWithScope(id: string) {
-    const url = new URL('http://localhost:4200/api/checkposts');
-    url.searchParams.append('id', id);
-    console.log(url.toString());
-    return this.http.get<HttpResponse<any>>(url.toString());
+    return this.http.get<HttpResponse<any>>('/api/checkposts', {
+      params: { id: id },
+    });
   }
 
   login(data: any) {
-    return this.http.post<HttpResponse<string>>(
-      'http://localhost:4200/api/login',
-      data
-    );
+    return this.http.post<HttpResponse<string>>('/api/login', data);
   }
 
   register(data: any) {
     return firstValueFrom(
-      this.http.post<HttpResponse<any>>(
-        'http://localhost:4200/api/new-user',
-        data
-      )
+      this.http.post<HttpResponse<any>>('/api/new-user', data)
     );
   }
 
   postPost(data: any) {
-    return this.http.post<HttpResponse<any>>(
-      'http://localhost:4200/api/new-post',
-      data
-    );
+    return this.http.post<HttpResponse<any>>('/api/new-post', data);
   }
 
   getUsers(data: any) {
     return firstValueFrom(
-      this.http.get<HttpResponse<any>>(
-        'http://localhost:4200/api/users?id=' + data
-      )
+      this.http.get<HttpResponse<any>>('/api/users?id=' + data)
     );
   }
 
   getFlag() {
-    return firstValueFrom(
-      this.http.get<HttpResponse<any>>('http://localhost:4200/api/flag')
-    );
+    return firstValueFrom(this.http.get<HttpResponse<any>>('/api/flag'));
   }
 }
