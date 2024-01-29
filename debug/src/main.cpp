@@ -154,6 +154,10 @@ int main()
     tree->switchSwing(swing, 6);
     std::cout << tree->getSwing()->calculateHeight() << " == 0" << std::endl;
 
+    std::cout << "Switching should delete nullptr" << std::endl;
+    Swing swing1 = Swing(1, Swing::Type::babies, 3);
+    tree->switchSwing(swing1, 6);
+
     printSubSeparator();
     std::cout << "#9 Testing iteration of registry" << std::endl;
     registry = Registry();
@@ -174,6 +178,9 @@ int main()
     std::cout << registry.next()->getName() << " == sapin2" << std::endl;
     std::cout << registry.next()->getName() << " == sapin3" << std::endl;
     std::cout << registry.next()->getName() << " == sapin1" << std::endl;
+
+    
+
 
     std::cout << "\n" << "End of program" << "\n";
     printSeparator();
