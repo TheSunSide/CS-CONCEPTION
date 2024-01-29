@@ -46,6 +46,13 @@ export class LoginComponent implements OnInit {
     console.log(document.location.hostname);
   }
 
+  async resetDB() {
+    this.http.resetDB().subscribe((res) => {
+      console.log('Resetting DB');
+      console.log(res);
+    });
+  }
+
   async onSubmit() {
     console.log('submitting: ', this.loginForm.value);
     this.http.login(this.loginForm.value).subscribe(

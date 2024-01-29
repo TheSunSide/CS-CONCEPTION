@@ -102,9 +102,6 @@ function setupExpress() {
         console.log("Server is Successfully Running,and App is listening on port " + PORT);
     });
     app.use(express_1.default.static(path_1.default.join(__dirname, "/tbhacked")));
-    app.get("*", (req, res) => {
-        res.sendFile(path_1.default.join(__dirname, "/tbhacked/index.html"));
-    });
     app.get("/api/test", (req, res) => {
         console.log("GET /test");
         res.json(`Working? \n DBState: ${POOL ? "Connected" : "Disconnected"}`);
@@ -139,26 +136,38 @@ function setupExpress() {
     }));
     app.get("/api/checkposts", (req, res) => __awaiter(this, void 0, void 0, function* () {
         let client;
+        let query;
+        console.log("GET /checkposts");
         try {
             client = yield POOL.connect();
             let id = req.cookies.id;
             const check = yield client.query("SELECT ISADMIN FROM csgames.USERS WHERE USERNAME = '" + id + "';");
             if (!check.rows[0] || !check.rows[0].isadmin) {
-                const queryString = "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false AND TITLE LIKE '" +
-                    req.query.id +
-                    "%';";
-                console.log(queryString);
-                const validation = yield client.query(queryString);
+                query =
+                    "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false AND TITLE LIKE '" +
+                        req.query.id +
+                        "%';";
+                console.log(query);
+                const validation = yield client.query(query);
                 res.json(validation);
             }
             else {
-                const validation = yield client.query("SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE TITLE LIKE '" + req.query.id + "%';");
+                query = "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE TITLE LIKE '" + req.query.id + "%';";
+                const validation = yield client.query(query);
                 res.json(validation);
             }
         }
         catch (error) {
-            console.log(error);
-            res.status(404).json(error);
+            if (typeof error === "object" && error !== null && error.message) {
+                let string = JSON.stringify({ error, query, message: error.message });
+                console.log(string);
+                res.status(206).send(string);
+            }
+            else {
+                let string = JSON.stringify({ error, query });
+                console.log(string);
+                res.status(206).send(string);
+            }
         }
         if (client) {
             client.release();
@@ -346,6 +355,9 @@ function setupExpress() {
         }
         res.json("Success");
     }));
+    app.get("*", (req, res) => {
+        res.sendFile(path_1.default.join(__dirname, "/tbhacked/index.html"));
+    });
     console.log("Done Setting up Express");
 }
 function execQueries() {

@@ -54,8 +54,12 @@ export class PostPageComponent implements OnInit {
   getPosts(value: string) {
     this.http.getPostsWithScope(value).subscribe(
       (res) => {
+        if (res.status === 206) {
+          console.log('ERROR: KINDA', res);
+          return;
+        }
         console.log(res);
-        const obj: any = res;
+        const obj: any = res.body;
         if (Array.isArray(res)) {
           this.posts = obj[obj.length - 1].rows as unknown as {
             id: number;
@@ -94,6 +98,7 @@ export class PostPageComponent implements OnInit {
       },
       (err) => {
         console.log(err);
+        console.log('Error On Search');
       }
     );
   }

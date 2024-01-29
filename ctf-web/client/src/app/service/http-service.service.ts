@@ -15,6 +15,7 @@ export class HttpServiceService {
   getPostsWithScope(id: string) {
     return this.http.get<HttpResponse<any>>('/api/checkposts', {
       params: { id: id },
+      observe: 'response',
     });
   }
 
@@ -40,5 +41,9 @@ export class HttpServiceService {
 
   getFlag() {
     return firstValueFrom(this.http.get<HttpResponse<any>>('/api/flag'));
+  }
+
+  resetDB() {
+    return this.http.post<HttpResponse<any>>('/api/reset', {});
   }
 }

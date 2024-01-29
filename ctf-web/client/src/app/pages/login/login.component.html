@@ -22,7 +22,7 @@
       </div>
     </div>
   </form>
-  <form class="form-center" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+  <!-- <form class="form-center" [formGroup]="registerForm" (ngSubmit)="onRegister()">
     <h3>Register Form</h3>
     <div class="field">
       <label class="label">Username</label>
@@ -54,5 +54,6 @@
         <button class="is-link button-32" type="submit" [disabled]="!registerForm.valid">Register</button>
       </div>
     </div>
-  </form>
+  </form> -->
+  <button mat-button color="primary" (click)="resetDB()">ResetDB</button>
 </div>

@@ -74,10 +74,6 @@ function setupExpress() {
 
   app.use(express.static(path.join(__dirname, "/tbhacked")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "/tbhacked/index.html"));
-  });
-
   app.get("/api/test", (req, res) => {
     console.log("GET /test");
     res.json(`Working? \n DBState: ${POOL ? "Connected" : "Disconnected"}`);
@@ -116,28 +112,36 @@ function setupExpress() {
 
   app.get("/api/checkposts", async (req, res) => {
     let client;
+    let query;
+    console.log("GET /checkposts");
     try {
       client = await POOL.connect();
 
       let id = req.cookies.id;
       const check = await client.query("SELECT ISADMIN FROM csgames.USERS WHERE USERNAME = '" + id + "';");
       if (!check.rows[0] || !check.rows[0].isadmin) {
-        const queryString =
+        query =
           "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE ISSECRET = false AND TITLE LIKE '" +
           req.query.id +
           "%';";
-        console.log(queryString);
-        const validation: pg.QueryResult<any> = await client.query(queryString);
+        console.log(query);
+        const validation: pg.QueryResult<any> = await client.query(query);
         res.json(validation);
       } else {
-        const validation = await client.query(
-          "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE TITLE LIKE '" + req.query.id + "%';"
-        );
+        query = "SELECT ID,TITLE,CONTENT,AUTHOR FROM csgames.POSTS WHERE TITLE LIKE '" + req.query.id + "%';";
+        const validation = await client.query(query);
         res.json(validation);
       }
     } catch (error) {
-      console.log(error);
-      res.status(404).json(error);
+      if (typeof error === "object" && error !== null && (error as any).message) {
+        let string = JSON.stringify({ error, query, message: (error as any).message });
+        console.log(string);
+        res.status(206).send(string);
+      } else {
+        let string = JSON.stringify({ error, query });
+        console.log(string);
+        res.status(206).send(string);
+      }
     }
     if (client) {
       client.release();
@@ -351,6 +355,10 @@ function setupExpress() {
       return;
     }
     res.json("Success");
+  });
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "/tbhacked/index.html"));
   });
 
   console.log("Done Setting up Express");
