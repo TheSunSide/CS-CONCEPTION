@@ -27,5 +27,5 @@ Lumberjack::Lumberjack() {
     _mBranch = STARTING_LENGTH;
 }
 Lumberjack::~Lumberjack() {
-    delete[] branches;
+    delete branches;
 }

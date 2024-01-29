@@ -1,5 +1,3 @@
-#ifndef SWING_H
-#define SWING_H
 class Swing
 {
 public:
@@ -20,4 +18,3 @@ private:
     int _horizontalPos = 0;
     int _direction = 0;
 };
-#endif

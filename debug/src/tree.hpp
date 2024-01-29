@@ -1,8 +1,6 @@
 /** A Tree implementation, this tree should contain multiple branches only 1 swing at the time
  *
  */
-#ifndef TREE_H
-#define TREE_H
 
 #include "swing.hpp"
 #include "branch.hpp"
@@ -33,4 +31,3 @@ private:
     int _maxBranches = DEFAULT_MAX_BRANCHES;
     Swing *_swing = nullptr;
 };
-#endif

@@ -1,5 +1,5 @@
 # tool macros
-CC := g++ # FILL: the compiler
+CC := gcc # FILL: the compiler
 CXX ?= # FILL: the compiler
 CFLAGS := # FILL: compile flags
 CXXFLAGS :=  -std=c++17 -Wall# FILL: compile flags
@@ -53,10 +53,6 @@ $(TARGET_DEBUG): $(OBJ_DEBUG)
 .PHONY: run
 run: $(TARGET)
 	@$(TARGET)
-
-.PHONY: rund
-rund: $(TARGET_DEBUG)
-	@$(TARGET_DEBUG)
 
 .PHONY: makedir
 makedir:

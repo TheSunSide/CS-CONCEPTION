@@ -1,5 +1,3 @@
-#ifndef BRANCH_H
-#define BRANCH_H
 #include "swing.hpp"
 class Branch {
     public:
@@ -15,4 +13,3 @@ class Branch {
         int _length;
         void grow();
 };
-#endif

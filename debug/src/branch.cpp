@@ -22,10 +22,7 @@ Branch::Branch(int id, int length) {
 }
 
 Branch::~Branch() {
-    if(mySwing != nullptr)
-    {
-        delete mySwing;
-    }
+    delete mySwing;
 }
 
 void Branch::grow() {
