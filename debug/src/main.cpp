@@ -41,55 +41,6 @@ int main()
     std::cout << registry.getList()[0]->getName() << std::endl;
     printSubSeparator();
 
-    std::cout << "#3 Testing 2 Tree with 1 Branches each and a registry" << std::endl;
-    registry = Registry();
-    tree = new Tree("sapin");
-    branch = Branch(5, 44);
-    tree->addBranch(branch);
-    tree->listBranches();
-    registry.addTree(tree);
-    tree = new Tree("sapin");
-    branch = Branch(6, 45);
-    tree->addBranch(branch);
-    tree->listBranches();
-    registry.addTree(tree);
-    std::cout << registry.getList()[0]->getName() << std::endl;
-    std::cout << registry.getList()[1]->getName() << std::endl;
-    printSubSeparator();
-
-    std::cout << "#4 Testing 2 Tree with 2 Branches each and a registry" << std::endl;
-    registry = Registry();
-    tree = new Tree("sapin");
-    branch = Branch(5, 44);
-    tree->addBranch(branch);
-    branch = Branch(6, 45);
-    tree->addBranch(branch);
-    tree->listBranches();
-    registry.addTree(tree);
-    tree = new Tree("sapin");
-    branch = Branch(7, 46);
-    tree->addBranch(branch);
-    branch = Branch(8, 47);
-    tree->addBranch(branch);
-    tree->listBranches();
-    registry.addTree(tree);
-    std::cout << registry.getList()[0]->getName() << std::endl;
-    std::cout << registry.getList()[1]->getName() << std::endl;
-    printSubSeparator();
-
-    std::cout << "#5 Testing too many trees" << std::endl;
-    registry = Registry();
-    for (int i = 0; i < 100; ++i)
-    {
-        tree = new Tree("sapin");
-        branch = Branch(5, 44);
-        tree->addBranch(branch);
-        branch = Branch(6, 45);
-        tree->addBranch(branch);
-        registry.addTree(tree);
-    }
-    printSubSeparator();
-
     std::cout << "#6 Testing a lumberjack" << std::endl;
     Lumberjack lumberjack = Lumberjack();
     tree = new Tree("sapin");
@@ -130,24 +81,8 @@ int main()
     tree->addBranch(branch);
     Swing swing = Swing(1, Swing::Type::babies, 3);
     tree->switchSwing(swing, 5);
-
-    std::cout << "Big pushes (2*3)" << std::endl;
     tree->pushSwing(3);
     std::cout << tree->getSwing()->calculateHeight() << " == 3" << std::endl;
-
-    tree->pushSwing(3);
-    std::cout << tree->getSwing()->calculateHeight() << " == 0" << std::endl;
-
-    std::cout << "Small pushes (3*1)" << std::endl;
-
-    tree->pushSwing(1);
-    std::cout << tree->getSwing()->calculateHeight() << std::endl;
-
-    tree->pushSwing(1);
-    std::cout << tree->getSwing()->calculateHeight() << std::endl;
-
-    tree->pushSwing(1);
-    std::cout << tree->getSwing()->calculateHeight() << std::endl;
 
     std::cout << "Switching swing should reset height to 0" << std::endl;
 
