@@ -5,19 +5,21 @@ class Swing
 public:
     enum Type
     {
-        kid,
-        school
+        babies,
+        flat
     };
-    void update(int = 1);
     float calculateHeight();
     Swing(int id, Type type, float rope);
     ~Swing() = default;
 
 private:
+    void update(int = 1);
     Type _type;
     float _ropeLength;
     int _id;
-    int _horizontalPos;
-    int _direction; // TODO set to 1
+    int _horizontalPos = 0;
+    int _direction = 1; // TODO set to 1
+    friend class Tree;
+    friend class Branch;
 };
 #endif

@@ -1,8 +1,5 @@
 #include "lumberjack.hpp"
 #define STARTING_LENGTH 2
-// void Lumberjack::takeLumber(Branch** branches) {
-
-// }
 
 void Lumberjack::takeLog(Branch* branch) {
     if(_nBranch >= _mBranch) {

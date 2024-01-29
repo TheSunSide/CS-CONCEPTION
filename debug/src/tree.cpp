@@ -88,10 +88,10 @@ Tree::~Tree()
 
 void Tree::switchSwing(Swing swing, int idTo)
 {
-    _swing = new Swing(swing);
     auto branch = findBranch(idTo);
     if (branch != nullptr)
     { // TODO remove if
+        _swing = new Swing(swing);
         branch->setSwing(swing);
     }
 }
@@ -152,4 +152,12 @@ void Tree::grow()
 std::string Tree::getName()
 {
     return _name;
+}
+
+void Tree::pushSwing(int duration)
+{
+    if(_swing != nullptr)
+    {
+        _swing->update(duration);
+    }
 }

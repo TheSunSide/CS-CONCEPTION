@@ -119,9 +119,63 @@ int main()
     tree->listBranches();
     tree->acceptVisitor(&grower);
     tree->listBranches();
-    printSeparator();
 
-    std::cout << "End of program" << "\n";
+    printSubSeparator();
+
+    std::cout << "#8 Testing a swing" << std::endl;
+    tree = new Tree("sapin");
+    branch = Branch(5, 44);
+    tree->addBranch(branch);
+    branch = Branch(6, 45);
+    tree->addBranch(branch);
+    Swing swing = Swing(1, Swing::Type::babies, 3);
+    tree->switchSwing(swing, 5);
+
+    std::cout << "Big pushes (2*3)" << std::endl;
+    tree->pushSwing(3);
+    std::cout << tree->getSwing()->calculateHeight() << " == 3" << std::endl;
+
+    tree->pushSwing(3);
+    std::cout << tree->getSwing()->calculateHeight() << " == 0" << std::endl;
+
+    std::cout << "Small pushes (3*1)" << std::endl;
+
+    tree->pushSwing(1);
+    std::cout << tree->getSwing()->calculateHeight() << std::endl;
+
+    tree->pushSwing(1);
+    std::cout << tree->getSwing()->calculateHeight() << std::endl;
+
+    tree->pushSwing(1);
+    std::cout << tree->getSwing()->calculateHeight() << std::endl;
+
+    std::cout << "Switching swing should reset height to 0" << std::endl;
+
+    tree->switchSwing(swing, 6);
+    std::cout << tree->getSwing()->calculateHeight() << " == 0" << std::endl;
+
+    printSubSeparator();
+    std::cout << "#9 Testing iteration of registry" << std::endl;
+    registry = Registry();
+    tree = new Tree("sapin1");
+    branch = Branch(5, 44);
+    tree->addBranch(branch);
+    registry.addTree(tree);
+    tree = new Tree("sapin2");
+    branch = Branch(6, 45);
+    tree->addBranch(branch);
+    registry.addTree(tree);
+    tree = new Tree("sapin3");
+    branch = Branch(7, 46);
+    tree->addBranch(branch);
+    registry.addTree(tree);
+
+    std::cout << registry.next()->getName() << " == sapin1" << std::endl;
+    std::cout << registry.next()->getName() << " == sapin2" << std::endl;
+    std::cout << registry.next()->getName() << " == sapin3" << std::endl;
+    std::cout << registry.next()->getName() << " == sapin1" << std::endl;
+
+    std::cout << "\n" << "End of program" << "\n";
     printSeparator();
     return 0;
 }

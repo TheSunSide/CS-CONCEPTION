@@ -9,6 +9,7 @@ void Branch::setSwing(Swing swing) {
         delete mySwing;
     }
     mySwing = &swing;
+    mySwing->_horizontalPos = 0;
 }
 
 Swing* Branch::getSwing() {

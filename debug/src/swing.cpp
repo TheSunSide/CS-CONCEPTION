@@ -1,16 +1,17 @@
 #include "swing.hpp"
 #include "math.h"
-#define MAX_X_DISTANCE 4
+//#define MAX_X_DISTANCE 4
 void Swing::update(int time) {
-    if(abs(_horizontalPos) == 4) {
-        _direction *= -1;
+    for(int i = 0; i < time; ++i) {
+        if(abs(_horizontalPos + _direction) > _ropeLength) {
+            _direction *= -1;
+        }
+        _horizontalPos += _direction;
     }
-
-    _horizontalPos += _direction*time;
 }
 
 float Swing::calculateHeight() {
-    return sqrt(_ropeLength*_ropeLength - _horizontalPos*_horizontalPos);
+    return _ropeLength - sqrt(_ropeLength*_ropeLength - (float)_horizontalPos*(float)_horizontalPos);
 }
 
 Swing::Swing(int id, Type type, float rope) {

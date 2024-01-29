@@ -24,6 +24,7 @@ public:
     Tree(std::string name);
     std::string getName();
     void acceptVisitor(Visitor *visitor);
+    void pushSwing(int duration = 1);
 
 private:
     void grow();

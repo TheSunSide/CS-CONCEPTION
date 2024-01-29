@@ -6,8 +6,13 @@ Tree **Registry::getList()
     return _trees;
 }
 
+
+// Should order the list of trees by their name in alphabetical order, if 2 trees have the same name, 
+// order them by the number of branches they have
 void Registry::orderList()
 {
+    _current = 0;
+    // TODO
 }
 
 void Registry::addTree(Tree* tree)
@@ -36,12 +41,13 @@ Registry::Registry()
 
 Registry::~Registry()
 {
-    delete[] (_trees);
-    std::cout << "Registry deleted" << std::endl;
+    if(*_trees)
+        delete (_trees);
 }
 
-Tree *Registry::next()
+// This should return the next tree in the list, if the end of the list is reached, it should start again from the beginning
+Tree* Registry::next()
 {
-    _current = _current++ % _nTrees; // TODO replace ++var by var++, replace _nTree by _mTree
-    return _trees[_current];
+    _current = _current % _nTrees; // TODO replace ++var by var++, replace _nTree by _mTree
+    return _trees[_current++];
 }
