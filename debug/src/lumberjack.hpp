@@ -1,6 +1,3 @@
-#ifndef LUMBERJACK_H
-#define LUMBERJACK_H
-
 #include "branch.hpp"
 #include "visitor.hpp"
 class Tree;
@@ -18,5 +15,3 @@ class Lumberjack: public Visitor {
         int _nBranch;
         int _mBranch;
 };
-
-#endif

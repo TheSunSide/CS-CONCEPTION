@@ -1,8 +1,6 @@
 /** A Tree implementation, this tree should contain multiple branches only 1 swing at the time
  *
  */
-#ifndef TREE_H
-#define TREE_H
 
 #include "swing.hpp"
 #include "branch.hpp"
@@ -20,7 +18,6 @@ public:
     void switchSwing(Swing swing, int idTo);
     Swing removeSwing();
     void listBranches();
-    ~Tree();
     Tree(std::string name);
     std::string getName();
     void acceptVisitor(Visitor *visitor);
@@ -31,9 +28,6 @@ private:
     std::string _name;
     Branch **_branches;
     int _nBranches = 0;
-    int _maxBranches; // TODO set to DEFAULT_MAX
+    int _maxBranches = DEFAULT_MAX_BRANCHES;
     Swing *_swing = nullptr;
-
-    friend class Visitor; // TODO remove this
 };
-#endif
