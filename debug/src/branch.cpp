@@ -4,10 +4,6 @@ int Branch::getLength() {
 }
 
 void Branch::setSwing(Swing swing) {
-    // TODO remove this if
-    if(mySwing != nullptr) {
-        delete mySwing;
-    }
     mySwing = &swing;
     mySwing->_horizontalPos = 0;
 }
@@ -30,7 +26,6 @@ Branch::~Branch() {
     {
         delete mySwing;
     }
-    
 }
 
 void Branch::grow() {

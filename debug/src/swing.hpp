@@ -18,8 +18,6 @@ private:
     float _ropeLength;
     int _id;
     int _horizontalPos = 0;
-    int _direction = 1; // TODO set to 1
-    friend class Tree;
-    friend class Branch;
+    int _direction = 0;
 };
 #endif

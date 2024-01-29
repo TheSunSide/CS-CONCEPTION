@@ -17,5 +17,4 @@ float Swing::calculateHeight() {
 Swing::Swing(int id, Type type, float rope) {
     _id = id;
     _ropeLength = rope;
-    _type = type; // TODO remove type set...
 }

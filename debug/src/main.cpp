@@ -179,10 +179,8 @@ int main()
     std::cout << registry.next()->getName() << " == sapin3" << std::endl;
     std::cout << registry.next()->getName() << " == sapin1" << std::endl;
 
-    
-
-
     std::cout << "\n" << "End of program" << "\n";
     printSeparator();
+    
     return 0;
 }
