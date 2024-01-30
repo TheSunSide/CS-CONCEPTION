@@ -6,7 +6,9 @@
  * Le programme fait les choses suivantes :
  * 1. Créer une balance pour avoir 3 plantes par animal
  * 2. Il faut libérer 3 plantes avec 1 animal en meme temps (print AAAP, PAAA, APAA, etc.)
- * 3. Verifier manuellement que vos sorties sont correctes
+ * 3. Verifiez manuellement 
+ *    (ou avec un autre processus si vous êtes motivés) 
+ *    que vos sorties sont correctes
 */
 
 

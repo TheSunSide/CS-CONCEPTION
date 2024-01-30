@@ -1,15 +1,7 @@
-IDÉES DE TRUCS 
-retirer des includes
-changer de struct* à struct
-mettre des constantes un peu partout
-mettre des defines pas corrects
-fuckup les delete
-ne pas mettre de delete pour lumberjack
-abstract class pour tree?
-visit pour lumber prend 1 branche, pour un herboriste en ajoute, les 2 ont un patron visiteur
-Les X premières branches sont grosses et basses
-Les Y sont entre grosse, moyenne et petites
-les Z sont petites et hautes
+# Debug
+Vous vous retrouvez avec un début de code quand même pertinent pour finir une compétition des CS Games, toutefois, étant donné qu’il n’est pas fini, votre but est de compléter le code pour qu’il compile sans erreur, sans warning et sans leak de mémoire. 
 
-# Problème de DEBUG
+On vous fournit un Makefile et les fichiers sources que vous devrez réparer avant la fin de la compétition. Dans le fichier main, vous y trouverez des tests non-exhaustifs que votre collègue précédent avait commencé pour tester des parties de son code. Écrire d’autres tests n’est pas nécessaire, mais ils peuvent être recommandés pour veiller au bon fonctionnement. 
+
+L'utilisation d’outils externes, tels que ceux de Visual Studio et valgrind sont conseillés également. On vous demande aussi que le code soit compatible avec la version std C++ 17.
 
